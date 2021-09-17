@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:messenger_clone/services/auth.dart';
 
-class SingIn extends StatefulWidget {
+class SignIn extends StatefulWidget {
   @override
-  _SingInState createState() => _SingInState();
+  _SignInState createState() => _SignInState();
 }
 
-class _SingInState extends State<SingIn> {
+class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
