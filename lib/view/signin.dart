@@ -21,8 +21,8 @@ class _SingInState extends State<SingIn> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
+              color: Color(0xffDB4437),
             ),
-            color: Color(0xffDB4437),
             padding: EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 8,
