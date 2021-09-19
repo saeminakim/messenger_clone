@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
 import 'package:messenger_clone/services/auth.dart';
 import 'package:messenger_clone/services/database.dart';
 import 'package:messenger_clone/view/chatscreen.dart';
@@ -12,10 +13,28 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool isSearching = false;
+  String myName, myProfilePic, myUserName, myEmail;
+
   Stream usersStream;
 
   TextEditingController searchUsernameEditingController =
       TextEditingController();
+
+  getMyInfoFromSharedPreference() async {
+    myName = await SharedPreferenceHelper().getDisplayName();
+    myProfilePic = await SharedPreferenceHelper().getUserProfileUrl();
+    myUserName = await SharedPreferenceHelper().getUserName();
+    myEmail = await SharedPreferenceHelper().getUserEmail();
+  }
+
+  getChatRoomIdByUsernames(String userA, String userB) {
+    if (userA.substring(0, 1).codeUnitAt(0) >
+        userB.substring(0, 1).codeUnitAt(0)) {
+      return "$userB\_$userA";
+    } else {
+      return "$userA\_$userB";
+    }
+  }
 
   onSearchBtnClick() async {
     isSearching = true;
@@ -28,6 +47,13 @@ class _HomeState extends State<Home> {
   Widget searchListUserTile({String profileUrl, name, username, email}) {
     return GestureDetector(
       onTap: () {
+        var chatRoomId = getChatRoomIdByUsernames(myUserName, username);
+        Map<String, dynamic> chatRoomInfoMap = {
+          "user": [myUserName, username]
+        };
+
+        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -84,6 +110,12 @@ class _HomeState extends State<Home> {
 
   Widget chatRoomsList() {
     return Container();
+  }
+
+  @override
+  void initState() {
+    getMyInfoFromSharedPreference();
+    super.initState();
   }
 
   @override
