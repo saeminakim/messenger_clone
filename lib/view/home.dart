@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   bool isSearching = false;
   String myName, myProfilePic, myUserName, myEmail;
 
-  Stream usersStream;
+  Stream usersStream, chatRoomsStream;
 
   TextEditingController searchUsernameEditingController =
       TextEditingController();
@@ -42,6 +42,28 @@ class _HomeState extends State<Home> {
     usersStream = await DatabaseMethods()
         .getUserByUserName(searchUsernameEditingController.text);
     setState(() {});
+  }
+
+  Widget chatRoomsList() {
+    return StreamBuilder(
+      stream: chatRoomsStream,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                itemCount: snapshot.data.docs.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return Text(
+                    ds.id.replaceAll(myUserName, "").replaceAll("_", ""),
+                  );
+                },
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
   }
 
   Widget searchListUserTile({String profileUrl, name, username, email}) {
@@ -108,13 +130,19 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget chatRoomsList() {
-    return Container();
+  getChatRooms() async {
+    chatRoomsStream = await DatabaseMethods().getChatRooms();
+    setState(() {});
+  }
+
+  onScreenLoaded() async {
+    await getMyInfoFromSharedPreference();
+    getChatRooms();
   }
 
   @override
   void initState() {
-    getMyInfoFromSharedPreference();
+    onScreenLoaded();
     super.initState();
   }
 
